@@ -41,20 +41,20 @@ async function api(b){const r=await fetch(API_URL,{method:"POST",headers:{"Conte
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ansOf=i=>{let a=me.ans[i]||"";const n=D[i].ex.length*3;return a.length===n?a:a.padEnd(n,"-").slice(0,n)};
-const done=i=>(ansOf(i).match(/[01]/g)||[]).length;
+const done=i=>ansOf(i).split("").filter((c,p)=>p%3===0&&(c==="0"||c==="1")).length;
 function home(){cur=null;
  $("#app").innerHTML=`<h1>Опрос: метафоры в китайских белых книгах</h1>
- <p class="mut">15 документов. К каждому фрагменту три вопроса, ответ «Да 是» или «Нет 否». Ответы сохраняются автоматически, можно закрыть страницу и продолжить позже.</p>
+ <p class="mut">15 документов. К каждому фрагменту один вопрос: метафора это или нет. Ответ «Да 是» или «Нет 否». Ответы сохраняются автоматически, можно закрыть страницу и продолжить позже.</p>
  ${CONFIGURED?"":'<div class="card mut">Опрос ещё не подключён к таблице: ответы не сохраняются.</div>'}
  <div class="card"><label class="mut">Ваше имя (оно станет заголовком вашего столбца в Excel)</label>
  <input type="text" id="nm" value="${esc(me.name)}" placeholder="Например: Иван П."></div>
- ${D.map((d,i)=>{const t=d.ex.length*3,c=done(i);return `<button class="doc" data-open="${i}"><span><b>${d.n}.</b> <span class="cn">${esc(d.cn)}</span><br><span class="mut">${esc(d.ru)}</span></span><span class="mut">${c}/${t}<div class="bar" style="width:90px"><i style="width:${100*c/t}%"></i></div></span></button>`}).join("")}
+ ${D.map((d,i)=>{const t=d.ex.length,c=done(i);return `<button class="doc" data-open="${i}"><span><b>${d.n}.</b> <span class="cn">${esc(d.cn)}</span><br><span class="mut">${esc(d.ru)}</span></span><span class="mut">${c}/${t}<div class="bar" style="width:90px"><i style="width:${100*c/t}%"></i></div></span></button>`}).join("")}
 `;
 }
 function openDoc(i){if(!me.name.trim()){$("#nm").focus();$("#nm").style.boxShadow="0 0 0 2px var(--no)";return}cur=i;const d=D[i],a=ansOf(i);
  $("#app").innerHTML=`<div class="top"><button id="back">← К списку</button><span><b class="cn">${esc(d.cn)}</b> <span id="st"></span></span></div>
  ${d.ex.map((e,k)=>`<div class="card"><div class="frag"><span class="num">${k+1}.</span> <span class="cn">${esc(e.cn)}</span> ${esc(e.ru)}</div>
- ${Q.map((q,j)=>{const p=k*3+j,v=a[p];return `<div class="q">${esc(q[0])}<span class="cn">${esc(q[1])}</span></div><div class="ans" data-p="${p}"><button data-v="1" class="${v==="1"?"on1":""}">Да 是</button><button data-v="0" class="${v==="0"?"on0":""}">Нет 否</button></div>`}).join("")}</div>`).join("")}
+ ${Q.slice(0,1).map((q,j)=>{const p=k*3+j,v=a[p];return `<div class="q">${esc(q[0])}<span class="cn">${esc(q[1])}</span></div><div class="ans" data-p="${p}"><button data-v="1" class="${v==="1"?"on1":""}">Да 是</button><button data-v="0" class="${v==="0"?"on0":""}">Нет 否</button></div>`}).join("")}</div>`).join("")}
  <button class="pri" id="back2">Готово, к списку</button>`;scrollTo(0,0)}
 let timer,busy=false,dirty=false;const dd=new Set();
 const st=t=>{const e=$("#st");if(e)e.textContent=t};
