@@ -35,6 +35,10 @@ const Q=[["Содержит ли приведенный фрагмент мет�
 const API_URL="https://script.google.com/macros/s/AKfycbycqiOt_Gzh31H3d1eav-ajopVDAO0qE4IslRZflg0Chg1f0Os7w7Qm1GebXxR6rb0xDA/exec";
 const CONFIGURED=/^https:\/\/script\.google\.com\//.test(API_URL);
 let me={name:"",ans:{}},cur=null,rid="";
+// Чтобы все начали опрос с нуля: поменяйте значение EPOCH. У каждого посетителя при следующем заходе
+// сотрутся сохранённые в браузере ответы и выдастся новый id, поэтому старые данные не подтянутся.
+const EPOCH="2026-11-16-reset1";
+try{if(localStorage.getItem("epoch")!==EPOCH){localStorage.removeItem("rid");localStorage.removeItem("me");localStorage.setItem("epoch",EPOCH)}}catch(e){}
 try{rid=localStorage.getItem("rid")||"";if(!rid){rid=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2));localStorage.setItem("rid",rid)}}catch(e){rid=rid||String(Date.now())+Math.random().toString(16).slice(2)}
 const cache=()=>{try{localStorage.setItem("me",JSON.stringify(me))}catch(e){}};
 async function api(b){const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)});return r.json()}
